@@ -7,9 +7,9 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { AuthService } from '../service/auth.service';
+import { CreateAuthDto } from '../dto/auth/create-auth.dto';
+import { UpdateAuthDto } from '../dto/auth/update-auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('auth')

@@ -1,28 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/crud-users/create-user.dto';
-import { UpdateUserDto } from '../dto/crud-users/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
+
+  async createUser(user: CreateUserDto): Promise<User> {
+    return this.userRepository.save(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async getUsers(): Promise<User[]> {
+    return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async getUserById(id: number): Promise<User | undefined> {
+    return this.userRepository.findOneBy({ id });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async updateUser(
+    id: number,
+    updatedUser: Partial<User>,
+  ): Promise<User | undefined> {
+    await this.userRepository.update(id, updatedUser);
+    return this.userRepository.findOneBy({ id });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async deleteUser(id: number): Promise<void> {
+    await this.userRepository.delete(id);
   }
 }

@@ -1,7 +1,6 @@
 import { PickType } from '@nestjs/mapped-types';
 import { User } from '../../entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { generateRandomString } from 'libs/utils/gen.random.string';
 
 export class CreateUserDto extends PickType(User, [
   'email',
@@ -10,19 +9,19 @@ export class CreateUserDto extends PickType(User, [
 ] as const) {
   @ApiProperty({
     description: 'The email of the user',
-    example: `user${generateRandomString()}@example.com`,
+    example: `user@example.com`,
   })
   email: string;
 
   @ApiProperty({
     description: 'The nickname of the user',
-    example: `nickname${generateRandomString()}`,
+    example: `nickname123`,
   })
   nickname: string;
 
   @ApiProperty({
     description: 'The password of the user',
-    example: `password${generateRandomString()}`,
+    example: `password`,
   })
   password: string;
 }

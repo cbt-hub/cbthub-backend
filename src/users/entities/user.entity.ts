@@ -14,7 +14,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({ description: '사용자 이메일', example: 'user@example.com' })
@@ -29,6 +29,9 @@ export class User {
   @IsNotEmpty()
   @ApiProperty({ description: '사용자 비밀번호', example: 'password' })
   password: string;
+
+  //TODO: User Entity에 Role을 추가. MEMBER, ADMIN 두 가지 역할을 가질 수 있게 해야함.
+  //TODO: 멤버쉽 기능을 추가. 무료 회원과 유료 회원으로 나누어야 함.
 
   @CreateDateColumn()
   @ApiProperty({

@@ -2,7 +2,7 @@
 /dist
 /node_modules
 /build
-/envs
+/config/envs
 
 # Logs
 logs

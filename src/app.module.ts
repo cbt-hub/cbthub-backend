@@ -9,7 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: './envs/.env',
+      envFilePath: `./config/envs/${process.env.NODE_ENV}.env`,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -19,12 +19,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         port: config.get<number>('DATABASE_PORT'),
         username: config.get('DATABASE_USERNAME'),
         password: config.get('DATABASE_PASSWORD'),
-        database:
-          config.get('NODE_ENV') === 'test'
-            ? config.get('TEST_DATABASE_NAME')
-            : config.get('NODE_ENV') === 'production'
-              ? config.get('PRODUCTION_DATABASE_NAME')
-              : config.get('DEV_DATABASE_NAME'),
+        database: config.get('DATABASE_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true, // TODO: 배포 시에는 false로 변경해야 합니다
       }),

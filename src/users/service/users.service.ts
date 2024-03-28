@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
-import { CreateUserDto } from '../dto/crud-users/create-user.dto';
+import { RoleEnum, User } from '../entities/user.entity';
+import { CreateUserDto } from '../dto/crud-users/createUser.dto';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { GetUserDto } from '../dto/crud-users/getUser.dto';
+import { adminSeceretConstants } from 'config/envs/secrets/adminSeceret.constants';
 
 @Injectable()
 export class UsersService {
@@ -13,12 +15,16 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async getProfile() {
-    return 'profile';
+  async getProfile(uuid: string): Promise<GetUserDto> {
+    const user = await this.userRepository.findOneBy({ uuid });
+    return new GetUserDto(user.username, user.nickname);
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const user = new User();
+    if (createUserDto.password === adminSeceretConstants.secret) {
+      user.role = RoleEnum.ADMIN;
+    }
     user.password = await this.hashPassword(createUserDto.password);
     user.uuid = uuidv4();
     user.username = createUserDto.username;

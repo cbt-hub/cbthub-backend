@@ -7,14 +7,15 @@ import {
   Param,
   Delete,
   Logger,
-  Req,
 } from '@nestjs/common';
 import { UsersService } from '../service/users.service';
-import { CreateUserDto } from '../dto/crud-users/create-user.dto';
-import { UpdateUserDto } from '../dto/crud-users/update-user.dto';
+import { CreateUserDto } from '../dto/crud-users/createUser.dto';
+import { UpdateUserDto } from '../dto/crud-users/updateUser.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Admin } from 'libs/decorator/admin.decorator';
 import { Auth } from 'libs/decorator/auth.decorator';
+import { GetUser } from 'libs/decorator/getUser.decorator';
+import { GetUserDto } from '../dto/crud-users/getUser.dto';
 
 @ApiTags('users')
 @Controller('v1/users')
@@ -22,43 +23,44 @@ export class UsersController {
   private readonly logger = new Logger(UsersController.name);
   constructor(private readonly usersService: UsersService) {}
 
+  /**
+   * @description 사용자 생성
+   * - 사용자 생성 시 비밀번호는 암호화하여 저장
+   * - uuid는 사용자 식별자로 사용
+   * * NOTE: adminSeceretConstants와 비밀번호가 동일하면 ADMIN으로 등록됨
+   */
   @Post()
   @ApiBody({ type: CreateUserDto })
   async create(@Body() createUserDto: CreateUserDto) {
-    this.logger.log('Creating a user');
+    this.logger.debug('Creating a user');
     return await this.usersService.createUser(createUserDto);
   }
 
   @Get('profile')
   @Auth()
-  async getProfile(@Req() req: Request) {
-    this.logger.log('Getting user profile');
-    // jwt 토큰을 통해 사용자 정보를 가져옵니다.
-    // 헤더에 Authorization: Bearer {token}이 있고, token에서 사용자 정보를 가져옵니다.
-    // req에서 user 정보를 가져와서 반환합니다.
-    console.log(req.headers);
-
-    return await this.usersService.getProfile();
+  async getProfile(@GetUser() user: any): Promise<GetUserDto> {
+    this.logger.debug('Getting user profile');
+    return await this.usersService.getProfile(user.uuid);
   }
 
   @Get()
   @Admin()
   async findAll() {
-    this.logger.log('Getting all users');
+    this.logger.debug('Getting all users');
     return await this.usersService.getUsers();
   }
 
   @Get(':id')
   @Admin()
   async findOne(@Param('id') id: string) {
-    this.logger.log(`Finding user with id ${id}`);
+    this.logger.debug(`Finding user with id ${id}`);
     return await this.usersService.getUserById(+id);
   }
 
   @Patch(':id')
   @Admin()
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    this.logger.log(`Updating user with id ${id}`);
+    this.logger.debug(`Updating user with id ${id}`);
     return await this.usersService.updateUser(+id, updateUserDto);
   }
 
@@ -69,7 +71,7 @@ export class UsersController {
   @Delete(':id')
   @Admin()
   async remove(@Param('id') id: string) {
-    this.logger.log(`Deleting user with id ${id}`);
+    this.logger.debug(`Deleting user with id ${id}`);
     return await this.usersService.deleteUser(+id);
   }
 }

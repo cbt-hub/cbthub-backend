@@ -35,7 +35,12 @@ export class AuthService {
       throw new UnauthorizedException('탈퇴한 회원입니다.');
     }
 
-    const payload = { username: result.username, sub: result.userId };
+    const payload = {
+      username: result.username,
+      sub: result.userId,
+      uuid: result.uuid,
+      role: result.role,
+    };
     return {
       access_token: this.jwtService.sign(payload, {
         secret: jwtConstants.secret,

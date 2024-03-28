@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { HttpErrorFilter } from 'libs/lifecycle/filter/http.error.filter';
+import { HttpErrorFilter } from 'libs/lifecycle/filter/httpError.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });

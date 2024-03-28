@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/crud-users/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UsersService {
@@ -12,8 +13,16 @@ export class UsersService {
     private userRepository: Repository<User>,
   ) {}
 
-  async createUser(user: CreateUserDto): Promise<User> {
-    user.password = await this.hashPassword(user.password);
+  async getProfile() {
+    return 'profile';
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const user = new User();
+    user.password = await this.hashPassword(createUserDto.password);
+    user.uuid = uuidv4();
+    user.username = createUserDto.username;
+    user.nickname = createUserDto.nickname;
     return this.userRepository.save(user);
   }
 
@@ -34,7 +43,7 @@ export class UsersService {
   }
 
   async deleteUser(id: number): Promise<void> {
-    await this.userRepository.delete(id);
+    await this.userRepository.update(id, { deletedAt: new Date() });
   }
 
   async findOneByUsername(username: string): Promise<User | undefined> {

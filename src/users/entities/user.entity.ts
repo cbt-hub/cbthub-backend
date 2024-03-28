@@ -14,6 +14,13 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'uuid', unique: true })
+  @ApiProperty({
+    description: '사용자 고유 UUID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  uuid: string;
+
   @Column({ unique: true })
   @IsEmail()
   @IsNotEmpty()

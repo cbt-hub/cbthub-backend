@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './users.service';
-import { SignInDto } from '../dto/auth/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 import { jwtConstants } from 'config/envs/secrets/jwt.constants';
 
@@ -26,11 +25,16 @@ export class AuthService {
     return null;
   }
 
-  async signIn(user: SignInDto) {
-    const result = await this.validateUser(user.username, user.password);
+  async signIn(username, password) {
+    const result = await this.validateUser(username, password);
     if (!result) {
       throw new UnauthorizedException('로그인 정보가 올바르지 않습니다.');
     }
+
+    if (result.deletedAt) {
+      throw new UnauthorizedException('탈퇴한 회원입니다.');
+    }
+
     const payload = { username: result.username, sub: result.userId };
     return {
       access_token: this.jwtService.sign(payload, {

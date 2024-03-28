@@ -2,16 +2,30 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpErrorFilter } from 'libs/lifecycle/filter/http.error.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder() // Swagger 설정
     .setTitle('CBT Hub API')
     .setDescription('The CBT Hub API description')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'oauth2',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        flows: {
+          password: {
+            tokenUrl: '/api/v1/auth/signin',
+            scopes: {},
+          },
+        },
+      },
+      'OAuth2PasswordBearer',
+    )
     .addTag('auth', '관련된 인증 API들의 집합입니다.')
     .addTag('users', '사용자 정보와 관련된 API들의 집합입니다!')
     .build();
@@ -29,6 +43,8 @@ async function bootstrap() {
       validationError: { target: false },
     }),
   );
+
+  app.useGlobalFilters(new HttpErrorFilter());
 
   await app.listen(3000);
 }

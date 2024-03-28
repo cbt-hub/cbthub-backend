@@ -12,8 +12,9 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   /**
-   * NOTE: swagger의 OAuth2PasswordBearer 기능을 사용하기 위해 DTO로 전달 받지 않는다.
-   * - DTO로 전달 받으면 grant_type으로 인식되어 swagger에서 테스트할 수 없다.
+   * NOTE: @Body SignInDto로 전달받지 않는 이유
+   * - swagger의 OAuth2PasswordBearer 기능을 사용하기 위해 DTO로 전달 받지 않는다.
+   * - DTO로 전달 받으면 `grant_type`으로 인식되어 swagger에서 테스트할 수 없다.
    */
   @Post('signin')
   @ApiBody({ type: SignInDto })

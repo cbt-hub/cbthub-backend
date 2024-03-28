@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Logger,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from '../service/users.service';
 import { CreateUserDto } from '../dto/crud-users/create-user.dto';
@@ -30,8 +31,13 @@ export class UsersController {
 
   @Get('profile')
   @Auth()
-  async getProfile() {
+  async getProfile(@Req() req: Request) {
     this.logger.log('Getting user profile');
+    // jwt 토큰을 통해 사용자 정보를 가져옵니다.
+    // 헤더에 Authorization: Bearer {token}이 있고, token에서 사용자 정보를 가져옵니다.
+    // req에서 user 정보를 가져와서 반환합니다.
+    console.log(req.headers);
+
     return await this.usersService.getProfile();
   }
 

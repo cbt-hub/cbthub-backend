@@ -7,7 +7,7 @@ import { SignInDto } from '../dto/auth/sign-in.dto';
 //TODO: 로그아웃 기능 추가
 //TODO: swagger의 Authorization 기능 추가
 @ApiTags('auth')
-@Controller('auth')
+@Controller('v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

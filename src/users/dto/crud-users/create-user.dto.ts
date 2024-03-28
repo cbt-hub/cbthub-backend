@@ -3,7 +3,7 @@ import { User } from '../../entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto extends PickType(User, [
-  'email',
+  'username',
   'nickname',
   'password',
 ] as const) {
@@ -11,7 +11,7 @@ export class CreateUserDto extends PickType(User, [
     description: 'The email of the user',
     example: `user@example.com`,
   })
-  email: string;
+  username: string;
 
   @ApiProperty({
     description: 'The nickname of the user',

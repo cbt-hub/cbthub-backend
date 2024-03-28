@@ -12,7 +12,7 @@ describe('UsersController (e2e)', () => {
   // 사용자 생성 테스트
   it('/users (POST)', async () => {
     const createUserDto = {
-      email: 'john.doe@example.com',
+      username: 'john.doe@example.com',
       nickname: 'JohnDoe123',
       password: 'securePassword',
     };
@@ -24,7 +24,7 @@ describe('UsersController (e2e)', () => {
       .expect((res) => {
         expect(res.body).toEqual(
           expect.objectContaining({
-            email: createUserDto.email,
+            username: createUserDto.username,
             nickname: createUserDto.nickname,
           }),
         );
@@ -40,7 +40,7 @@ describe('UsersController (e2e)', () => {
         expect(res.body).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
-              email: 'john.doe@example.com',
+              username: 'john.doe@example.com',
               nickname: 'JohnDoe123',
             }),
           ]),
@@ -65,7 +65,7 @@ describe('UsersController (e2e)', () => {
     const userId = 1;
     const updateUserDto = {
       nickname: 'Jane Doe',
-      email: 'jane.doe@example.com',
+      username: 'jane.doe@example.com',
     };
 
     return request(app.getHttpServer())

@@ -37,8 +37,8 @@ export class UsersService {
     await this.userRepository.delete(id);
   }
 
-  async findOneByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOneBy({ email });
+  async findOneByUsername(username: string): Promise<User | undefined> {
+    return this.userRepository.findOneBy({ username });
   }
 
   async hashPassword(password: string): Promise<string> {

@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { IsNotEmpty, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
@@ -18,7 +18,7 @@ export class User {
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({ description: '사용자 이메일', example: 'user@example.com' })
-  email: string;
+  username: string;
 
   @Column({ unique: true })
   @IsNotEmpty()
@@ -30,8 +30,14 @@ export class User {
   @ApiProperty({ description: '사용자 비밀번호', example: 'password' })
   password: string;
 
-  //TODO: User Entity에 Role을 추가. MEMBER, ADMIN 두 가지 역할을 가질 수 있게 해야함.
   //TODO: 멤버쉽 기능을 추가. 무료 회원과 유료 회원으로 나누어야 함.
+  @Column({ default: 'MEMBER' })
+  @IsEnum(['MEMBER', 'ADMIN'])
+  @ApiProperty({
+    description: '사용자 역할',
+    example: 'MEMBER',
+  })
+  role: RoleEnum;
 
   @CreateDateColumn()
   @ApiProperty({
@@ -53,4 +59,9 @@ export class User {
     example: '2023-01-03T00:00:00.000Z',
   })
   deletedAt?: Date;
+}
+
+export enum RoleEnum {
+  MEMBER = 'MEMBER',
+  ADMIN = 'ADMIN',
 }

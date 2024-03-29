@@ -43,6 +43,15 @@ export class UsersController {
     return await this.usersService.getProfile(user.uuid);
   }
 
+  //TODO: 프로필 수정 기능 추가
+  //TODO: 비밀번호 변경 기능 추가
+  //TODO: 회원 탈퇴 기능 추가 (soft delete)
+
+  /**
+   * TODO: 문제풀이 기능 추가 - 진행률 표시할 수 있어야함.
+   * @link https://excalidraw.com/#json=rL1OdPY3H8KKMr1doM2yV,rbU-G9znZ9bW5zJpKdyI_w
+   */
+
   @Get()
   @Admin()
   async findAll() {

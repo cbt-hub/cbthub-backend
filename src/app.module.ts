@@ -21,7 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         password: config.get('DATABASE_PASSWORD'),
         database: config.get('DATABASE_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // TODO: 배포 시에는 false로 변경해야 합니다
+        synchronize: true, // TODO: prod 환경에서는 false로 변경되게끔 로직 수정
       }),
       inject: [ConfigService],
     }),

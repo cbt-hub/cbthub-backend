@@ -23,7 +23,7 @@ export class QuestionDetails {
     example: 'HomePNA - PLC(Power Line Communication) - Wi-Fi - Wireless LAN',
   })
   @IsNotEmpty()
-  answer: string;
+  choice: string;
 
   @Column({ default: false })
   @ApiProperty({

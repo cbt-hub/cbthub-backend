@@ -12,9 +12,16 @@ import {
 import { QuestionDetails } from './questionDetails.entity';
 import { QuestionExplains } from './questionExplains.entity';
 
+/**
+ * TODO: 문제풀이 기능 추가 - 진행률 표시할 수 있어야함.
+ * @link https://excalidraw.com/#json=rL1OdPY3H8KKMr1doM2yV,rbU-G9znZ9bW5zJpKdyI_w
+ * - 진행률 표시를 위한 엔티티 설계
+ *
+ * TODO: 문제 등록 로직
+ * @link https://excalidraw.com/#json=W8S1vJ0vguZTVX1BkFecN,eXx7XhIp4WEfowvuLkOWhg
+ */
 @Entity()
 export class Question {
-  //TODO: Question Entity 작성
   @PrimaryGeneratedColumn()
   id: number;
 

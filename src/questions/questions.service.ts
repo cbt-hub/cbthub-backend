@@ -7,6 +7,7 @@ import { CreateQuestionDetailsDto } from './dto/createQuestionDetails.dto';
 import { QuestionDetails } from './entities/questionDetails.entity';
 import { QuestionExplains } from './entities/questionExplains.entity';
 import { CreateQuestionExplainsDto } from './dto/createQuestionExplains.dto';
+import { checkNumberString } from 'libs/validator/numberString.validator';
 
 @Injectable()
 export class QuestionsService {
@@ -33,6 +34,7 @@ export class QuestionsService {
     createQuestionDetailsDtos: CreateQuestionDetailsDto[],
     questionId: string,
   ) {
+    checkNumberString(questionId);
     const question = await this.questionRepository.findOne({
       where: { id: Number(questionId) },
     });
@@ -50,6 +52,7 @@ export class QuestionsService {
     createQuestionExplainsDto: CreateQuestionExplainsDto[],
     questionId: string,
   ) {
+    checkNumberString(questionId);
     const question = await this.questionRepository.findOne({
       where: { id: Number(questionId) },
     });

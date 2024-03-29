@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from './entities/question.entity';
 import { Repository } from 'typeorm';
 import { CreateQuestionDto } from './dto/createQuestion.dto';
 import { CreateQuestionDetailsDto } from './dto/createQuestionDetails.dto';
 import { QuestionDetails } from './entities/questionDetails.entity';
+import { QuestionExplains } from './entities/questionExplains.entity';
+import { CreateQuestionExplainsDto } from './dto/createQuestionExplains.dto';
 
 @Injectable()
 export class QuestionsService {
@@ -13,6 +15,8 @@ export class QuestionsService {
     private questionRepository: Repository<Question>,
     @InjectRepository(QuestionDetails)
     private questionDetailsRepository: Repository<QuestionDetails>,
+    @InjectRepository(QuestionExplains)
+    private questionExplainsRepository: Repository<QuestionExplains>,
   ) {}
 
   async createQuestion(
@@ -29,11 +33,6 @@ export class QuestionsService {
     createQuestionDetailsDtos: CreateQuestionDetailsDto[],
     questionId: string,
   ) {
-    // 만약 questionId가 숫자형의 string이 아니라면 BadRequestException을 던집니다.
-    if (isNaN(Number(questionId))) {
-      throw new BadRequestException('questionId must be a number');
-    }
-
     const question = await this.questionRepository.findOne({
       where: { id: Number(questionId) },
     });
@@ -44,6 +43,23 @@ export class QuestionsService {
       questionDetails.isCorrect = createQuestionDetailsDto.isCorrect;
       questionDetails.question = question;
       return this.questionDetailsRepository.save(questionDetails);
+    });
+  }
+
+  async createQuestionExplains(
+    createQuestionExplainsDto: CreateQuestionExplainsDto[],
+    questionId: string,
+  ) {
+    const question = await this.questionRepository.findOne({
+      where: { id: Number(questionId) },
+    });
+
+    return await createQuestionExplainsDto.map((createQuestionExplainsDto) => {
+      const questionExplains = new QuestionExplains();
+      questionExplains.type = createQuestionExplainsDto.type;
+      questionExplains.explain = createQuestionExplainsDto.explain;
+      questionExplains.question = question;
+      return this.questionExplainsRepository.save(questionExplains);
     });
   }
 }

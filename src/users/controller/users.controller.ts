@@ -28,6 +28,7 @@ export class UsersController {
    * - 사용자 생성 시 비밀번호는 암호화하여 저장
    * - uuid는 사용자 식별자로 사용
    * * NOTE: adminSeceretConstants와 비밀번호가 동일하면 ADMIN으로 등록됨
+   * * FIXME: 추후 seed에 ADMIN 계정이 추가되게끔 하고, ADMIN 계정이 ADMIN 권한을 부여하도록 수정
    */
   @Post()
   @ApiBody({ type: CreateUserDto })

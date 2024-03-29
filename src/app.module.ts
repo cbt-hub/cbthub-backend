@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { QuestionModule } from './question/question.module';
+import { QuestionsModule } from './questions/questions.module';
 
 @Module({
   imports: [
@@ -22,12 +22,13 @@ import { QuestionModule } from './question/question.module';
         password: config.get('DATABASE_PASSWORD'),
         database: config.get('DATABASE_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // TODO: prod 환경에서는 false로 변경되게끔 로직 수정
+        synchronize: config.get('NODE_ENV') !== 'production', // 개발 환경에서만 동기화
+        logging: config.get('NODE_ENV') !== 'production',
       }),
       inject: [ConfigService],
     }),
     UsersModule,
-    QuestionModule,
+    QuestionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

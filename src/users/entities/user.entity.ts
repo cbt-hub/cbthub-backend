@@ -9,6 +9,11 @@ import {
 import { IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
+export enum RoleEnum {
+  MEMBER = 'MEMBER',
+  ADMIN = 'ADMIN',
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -38,8 +43,8 @@ export class User {
   password: string;
 
   //TODO: 멤버쉽 기능을 추가. 무료 회원과 유료 회원으로 나누어야 함.
-  @Column({ default: 'MEMBER' })
-  @IsEnum(['MEMBER', 'ADMIN'])
+  @Column({ default: RoleEnum.MEMBER })
+  @IsEnum([RoleEnum.MEMBER, RoleEnum.ADMIN])
   @ApiProperty({
     description: '사용자 역할',
     example: 'MEMBER',
@@ -66,9 +71,4 @@ export class User {
     example: '2023-01-03T00:00:00.000Z',
   })
   deletedAt?: Date;
-}
-
-export enum RoleEnum {
-  MEMBER = 'MEMBER',
-  ADMIN = 'ADMIN',
 }

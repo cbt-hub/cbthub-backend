@@ -13,7 +13,6 @@ import { Question } from './question.entity';
 
 @Entity()
 export class QuestionDetails {
-  //TODO: Question Entity 작성
   @PrimaryGeneratedColumn()
   id: number;
 

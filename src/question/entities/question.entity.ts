@@ -9,7 +9,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionDetails } from './questionDetails.entity copy';
+import { QuestionDetails } from './questionDetails.entity';
+import { QuestionExplains } from './questionExplains.entity';
 
 @Entity()
 export class Question {
@@ -26,7 +27,7 @@ export class Question {
   @IsNotEmpty()
   title: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar', length: 2000 })
   @ApiProperty({
     description: '질문 내용',
     example: `- 일반적으로 3.1~10.6GHz 대역에서, 
@@ -51,8 +52,15 @@ export class Question {
   @IsOptional()
   image: string | null;
 
-  @OneToMany(() => QuestionDetails, (details) => details.question)
+  @OneToMany(() => QuestionDetails, (details) => details.question, {
+    onDelete: 'CASCADE',
+  })
   details: QuestionDetails[];
+
+  @OneToMany(() => QuestionExplains, (explains) => explains.question, {
+    onDelete: 'CASCADE',
+  })
+  explains: QuestionExplains[];
 
   @CreateDateColumn()
   @ApiProperty({

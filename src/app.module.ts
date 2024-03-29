@@ -23,7 +23,7 @@ import { QuestionsModule } from './questions/questions.module';
         database: config.get('DATABASE_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: config.get('NODE_ENV') !== 'production', // 개발 환경에서만 동기화
-        logging: config.get('NODE_ENV') !== 'production',
+        logging: config.get('NODE_ENV') !== 'production', //TODO: TypeORM Custom Logger로 변경
       }),
       inject: [ConfigService],
     }),

@@ -14,6 +14,8 @@ export class QuestionsController {
 
   /**
    * @description Question 생성
+   * TODO: 이미지 업로드 기능 추가 - Azure Storage Blob 사용할 것임
+   * - MultiPartFormData 사용하여 이미지 업로드 해야 한다.
    */
   @Post()
   @Admin()
@@ -58,4 +60,15 @@ export class QuestionsController {
       questionId,
     );
   }
+
+  /**
+   * TODO: Question 조회 기능 추가
+   * @description Question 조회
+   * - QuestionDetails, QuestionExplains도 함께 조회
+   */
+
+  /**
+   * TODO: Question Status, Round, Category 엔티티 추가 및 CRUD 구현
+   * - 진행률이 표시되게끔 구현한다.
+   */
 }

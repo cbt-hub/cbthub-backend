@@ -39,13 +39,15 @@ export class QuestionsService {
       where: { id: Number(questionId) },
     });
 
-    return await createQuestionDetailsDtos.map((createQuestionDetailsDto) => {
-      const questionDetails = new QuestionDetails();
-      questionDetails.choice = createQuestionDetailsDto.choice;
-      questionDetails.isCorrect = createQuestionDetailsDto.isCorrect;
-      questionDetails.question = question;
-      return this.questionDetailsRepository.save(questionDetails);
-    });
+    return Promise.all(
+      createQuestionDetailsDtos.map((createQuestionDetailsDto) => {
+        const questionDetails = new QuestionDetails();
+        questionDetails.choice = createQuestionDetailsDto.choice;
+        questionDetails.isCorrect = createQuestionDetailsDto.isCorrect;
+        questionDetails.question = question;
+        return this.questionDetailsRepository.save(questionDetails);
+      }),
+    );
   }
 
   async createQuestionExplains(
@@ -57,12 +59,14 @@ export class QuestionsService {
       where: { id: Number(questionId) },
     });
 
-    return await createQuestionExplainsDto.map((createQuestionExplainsDto) => {
-      const questionExplains = new QuestionExplains();
-      questionExplains.type = createQuestionExplainsDto.type;
-      questionExplains.explain = createQuestionExplainsDto.explain;
-      questionExplains.question = question;
-      return this.questionExplainsRepository.save(questionExplains);
-    });
+    return Promise.all(
+      createQuestionExplainsDto.map((createQuestionExplainsDto) => {
+        const questionExplains = new QuestionExplains();
+        questionExplains.type = createQuestionExplainsDto.type;
+        questionExplains.explain = createQuestionExplainsDto.explain;
+        questionExplains.question = question;
+        return this.questionExplainsRepository.save(questionExplains);
+      }),
+    );
   }
 }

@@ -5,6 +5,7 @@ import { Round } from '../entities/round.entity';
 import { CreateRoundDto } from '../dto/round/createRound.dto';
 import { Category } from '../entities/category.entity';
 import { convertYyyymmddToDate } from 'libs/utils/date.util';
+import { GetRoundDto } from '../dto/round/getRound.dto';
 
 @Injectable()
 export class RoundsService {
@@ -28,5 +29,15 @@ export class RoundsService {
     round.name = createRoundDto.name;
     round.category = category;
     return this.roundRepository.save(round);
+  }
+
+  async getRounds(): Promise<GetRoundDto[]> {
+    const round = await this.roundRepository.find({
+      relations: ['category'],
+    });
+
+    console.log(`round: ${JSON.stringify(round)}`);
+
+    return null;
   }
 }

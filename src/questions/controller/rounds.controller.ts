@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Admin } from 'libs/decorator/admin.decorator';
 import { CreateRoundDto } from '../dto/round/createRound.dto';
@@ -23,4 +23,13 @@ export class RoundsController {
 
   //TODO: Round CRUD API 구현
   //TODO: GET 요청에 진행률도 같이 반환
+  /**
+   * @description Round 전체 조회
+   * - 로그인한 사용자는 진행률도 같이 반환
+   */
+  @Get()
+  async findAll() {
+    this.logger.debug('Getting all rounds');
+    return await this.roundService.getRounds();
+  }
 }

@@ -1,10 +1,12 @@
-import { Body, Controller, Logger, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Logger, Param, Post, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { QuestionsService } from '../service/questions.service';
 import { CreateQuestionDto } from '../dto/question/createQuestion.dto';
 import { Admin } from 'libs/decorator/admin.decorator';
 import { CreateQuestionDetailsDto } from '../dto/question/createQuestionDetails.dto';
 import { CreateQuestionExplainsDto } from '../dto/question/createQuestionExplains.dto';
+import { validateToken } from 'libs/validator/token.validator';
+import { QuestionSolveDto } from '../dto/question/questionSolve.dto';
 
 /**
  * @link https://excalidraw.com/#json=1ZKrvXZRx7clx7yYYtq0p,jvYKLo94e6wsseSrPHuNpw
@@ -76,4 +78,33 @@ export class QuestionsController {
    * TODO: Question Status, Round, Category 엔티티 추가 및 CRUD 구현
    * - 진행률이 표시되게끔 구현한다.
    */
+
+  /**
+   * @description Question Solve
+   * - 로그인 안 한 사용자: 로그인 페이지로 이동 O
+   * - 로그인 한 사용자: 해당 회차(round)를 처음 풀었는지 여부에 따라 다른 로직
+   */
+  @ApiBearerAuth('OAuth2PasswordBearer')
+  @Post(':id/solve')
+  async solve(
+    @Param('id') questionId: string,
+    @Body() questionSolveDto: QuestionSolveDto,
+    @Req() req: any,
+  ) {
+    this.logger.debug('Solving a question');
+
+    const token = req.headers.authorization
+      ? req.headers.authorization.split(' ')[1]
+      : null;
+
+    if (!token || !validateToken(token)) {
+      return { message: '로그인 페이지로 이동', questionId };
+    }
+
+    return await this.questionService.solveQuestion(
+      questionId,
+      questionSolveDto,
+      token,
+    );
+  }
 }

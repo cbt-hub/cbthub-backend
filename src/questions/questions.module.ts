@@ -12,6 +12,7 @@ import { Round } from './entities/round.entity';
 import { QuestionStatus } from './entities/questionStatus.entity';
 import { RoundsController } from './controller/rounds.controller';
 import { RoundsService } from './service/rounds.service';
+import { User } from '@src/users/entities/user.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RoundsService } from './service/rounds.service';
       Category,
       Round,
       QuestionStatus,
+      User,
     ]),
   ],
   controllers: [QuestionsController, CategoriesController, RoundsController],

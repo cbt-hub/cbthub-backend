@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,6 +13,7 @@ import {
 import { QuestionDetails } from './questionDetails.entity';
 import { QuestionExplains } from './questionExplains.entity';
 import { QuestionStatus } from './questionStatus.entity';
+import { Round } from './round.entity';
 
 /**
  * TODO: 문제풀이 기능 추가 - 진행률 표시할 수 있어야함.
@@ -26,7 +28,7 @@ export class Question {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: false })
   @ApiProperty({
     description: '질문 제목',
     example: '다음 중 올바른 설명으로 적절한 것은?',
@@ -74,6 +76,9 @@ export class Question {
     onDelete: 'CASCADE',
   })
   statuses: QuestionStatus[];
+
+  @ManyToOne(() => Round, (round) => round.questions)
+  round: Round;
 
   @CreateDateColumn()
   @ApiProperty({

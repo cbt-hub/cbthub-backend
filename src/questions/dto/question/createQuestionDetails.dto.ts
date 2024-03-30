@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { QuestionDetails } from '../entities/questionDetails.entity';
+import { QuestionDetails } from '../../entities/questionDetails.entity';
 
 export class CreateQuestionDetailsDto extends PickType(QuestionDetails, [
   'choice',

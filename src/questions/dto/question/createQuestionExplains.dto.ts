@@ -2,7 +2,7 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import {
   ExplainTypeEnum,
   QuestionExplains,
-} from '../entities/questionExplains.entity';
+} from '../../entities/questionExplains.entity';
 
 export class CreateQuestionExplainsDto extends PickType(QuestionExplains, [
   'type',

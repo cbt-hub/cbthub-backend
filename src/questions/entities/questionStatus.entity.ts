@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNumber } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -41,6 +41,14 @@ export class QuestionStatus {
     example: 'SOLVE_CORRECT',
   })
   status: QuestionStatusEnum;
+
+  @Column({ nullable: true })
+  @IsNumber()
+  @ApiProperty({
+    description: '사용자가 정답으로 제출한 답의 번호',
+    example: 1,
+  })
+  questionDetailsId: number;
 
   @ManyToOne(() => Question, (question) => question.statuses)
   question: Question;

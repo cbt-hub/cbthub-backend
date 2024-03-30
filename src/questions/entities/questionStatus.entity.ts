@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Question } from './question.entity';
 import { User } from '@src/users/entities/user.entity';
+import { Optional } from '@nestjs/common';
 
 export enum QuestionStatusEnum {
   SOLVED_CORRECT = 'SOLVE_CORRECT', // 정답을 맞춘 상태
@@ -48,6 +49,7 @@ export class QuestionStatus {
     description: '사용자가 정답으로 제출한 답의 번호',
     example: 1,
   })
+  @Optional()
   questionDetailsId: number;
 
   @ManyToOne(() => Question, (question) => question.statuses)

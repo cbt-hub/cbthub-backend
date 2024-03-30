@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { QuestionsModule } from './questions/questions.module';
+import { TypeormLogger } from 'config/typeorm.logger';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { QuestionsModule } from './questions/questions.module';
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: config.get('NODE_ENV') !== 'production', // 개발 환경에서만 동기화
         logging: config.get('NODE_ENV') !== 'production', //TODO: TypeORM Custom Logger로 변경
+        logger: new TypeormLogger(),
       }),
       inject: [ConfigService],
     }),

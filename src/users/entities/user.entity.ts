@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { IsNotEmpty, IsEmail, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { QuestionStatus } from '@src/questions/entities/questionStatus.entity';
 
 export enum RoleEnum {
   MEMBER = 'MEMBER',
@@ -43,13 +45,21 @@ export class User {
   password: string;
 
   //TODO: 멤버쉽 기능을 추가. 무료 회원과 유료 회원으로 나누어야 함.
-  @Column({ default: RoleEnum.MEMBER })
+  @Column({
+    type: 'enum',
+    enum: RoleEnum,
+    default: RoleEnum.MEMBER,
+    enumName: 'role_enum',
+  })
   @IsEnum([RoleEnum.MEMBER, RoleEnum.ADMIN])
   @ApiProperty({
     description: '사용자 역할',
     example: 'MEMBER',
   })
   role: RoleEnum;
+
+  @OneToMany(() => QuestionStatus, (questionStatus) => questionStatus.user)
+  statuses: QuestionStatus[];
 
   @CreateDateColumn()
   @ApiProperty({

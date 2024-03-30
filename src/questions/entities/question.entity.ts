@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { QuestionDetails } from './questionDetails.entity';
 import { QuestionExplains } from './questionExplains.entity';
+import { QuestionStatus } from './questionStatus.entity';
 
 /**
  * TODO: 문제풀이 기능 추가 - 진행률 표시할 수 있어야함.
@@ -68,6 +69,11 @@ export class Question {
     onDelete: 'CASCADE',
   })
   explains: QuestionExplains[];
+
+  @OneToMany(() => QuestionStatus, (status) => status.question, {
+    onDelete: 'CASCADE',
+  })
+  statuses: QuestionStatus[];
 
   @CreateDateColumn()
   @ApiProperty({

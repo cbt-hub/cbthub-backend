@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -29,7 +29,7 @@ export class Round {
 
   @Column({ nullable: false })
   @IsDate()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: '회차 개최일',
     example: '2021-01-01',

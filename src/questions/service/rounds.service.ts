@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Round } from '../entities/round.entity';
 import { CreateRoundDto } from '../dto/round/createRound.dto';
 import { Category } from '../entities/category.entity';
+import { convertYyyymmddToDate } from 'libs/utils/date.util';
 
 @Injectable()
 export class RoundsService {
@@ -20,8 +21,11 @@ export class RoundsService {
     });
 
     const round = new Round();
+
+    if (createRoundDto.heldAt) {
+      round.heldAt = convertYyyymmddToDate(createRoundDto.heldAt);
+    }
     round.name = createRoundDto.name;
-    round.heldAt = createRoundDto.heldAt;
     round.category = category;
     return this.roundRepository.save(round);
   }

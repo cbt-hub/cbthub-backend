@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Question } from './entities/question.entity';
+import { Question } from '../entities/question.entity';
 import { Repository } from 'typeorm';
-import { CreateQuestionDto } from './dto/createQuestion.dto';
-import { CreateQuestionDetailsDto } from './dto/createQuestionDetails.dto';
-import { QuestionDetails } from './entities/questionDetails.entity';
-import { QuestionExplains } from './entities/questionExplains.entity';
-import { CreateQuestionExplainsDto } from './dto/createQuestionExplains.dto';
+import { CreateQuestionDto } from '../dto/question/createQuestion.dto';
+import { CreateQuestionDetailsDto } from '../dto/question/createQuestionDetails.dto';
+import { QuestionDetails } from '../entities/questionDetails.entity';
+import { QuestionExplains } from '../entities/questionExplains.entity';
+import { CreateQuestionExplainsDto } from '../dto/question/createQuestionExplains.dto';
 import { checkNumberString } from 'libs/validator/numberString.validator';
 
 @Injectable()

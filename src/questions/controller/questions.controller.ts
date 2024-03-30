@@ -1,10 +1,10 @@
 import { Body, Controller, Logger, Param, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { QuestionsService } from './questions.service';
-import { CreateQuestionDto } from './dto/createQuestion.dto';
+import { QuestionsService } from '../service/questions.service';
+import { CreateQuestionDto } from '../dto/question/createQuestion.dto';
 import { Admin } from 'libs/decorator/admin.decorator';
-import { CreateQuestionDetailsDto } from './dto/createQuestionDetails.dto';
-import { CreateQuestionExplainsDto } from './dto/createQuestionExplains.dto';
+import { CreateQuestionDetailsDto } from '../dto/question/createQuestionDetails.dto';
+import { CreateQuestionExplainsDto } from '../dto/question/createQuestionExplains.dto';
 
 /**
  * @link https://excalidraw.com/#json=1ZKrvXZRx7clx7yYYtq0p,jvYKLo94e6wsseSrPHuNpw

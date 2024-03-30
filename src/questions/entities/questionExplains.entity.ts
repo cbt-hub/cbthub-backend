@@ -24,7 +24,12 @@ export class QuestionExplains {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: ExplainTypeEnum.NORMAL })
+  @Column({
+    type: 'enum',
+    enum: ExplainTypeEnum,
+    default: ExplainTypeEnum.NORMAL,
+    enumName: 'explain_type_enum',
+  })
   @IsEnum([
     ExplainTypeEnum.NORMAL,
     ExplainTypeEnum.GPT3,

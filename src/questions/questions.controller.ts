@@ -6,6 +6,11 @@ import { Admin } from 'libs/decorator/admin.decorator';
 import { CreateQuestionDetailsDto } from './dto/createQuestionDetails.dto';
 import { CreateQuestionExplainsDto } from './dto/createQuestionExplains.dto';
 
+/**
+ * @link https://excalidraw.com/#json=1ZKrvXZRx7clx7yYYtq0p,jvYKLo94e6wsseSrPHuNpw
+ * - 로그인 여부에 따라 question_solve 시 다른 로직을 타야 한다.
+ * - 해당 회차(round)를 처음 풀었는지 여부에 따라 다른 로직을 타야 한다.
+ */
 @ApiTags('questions')
 @Controller('v1/questions')
 export class QuestionsController {

@@ -22,4 +22,5 @@ export class RoundsController {
   }
 
   //TODO: Round CRUD API 구현
+  //TODO: GET 요청에 진행률도 같이 반환
 }

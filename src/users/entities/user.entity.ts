@@ -45,6 +45,7 @@ export class User {
   password: string;
 
   //TODO: 멤버쉽 기능을 추가. 무료 회원과 유료 회원으로 나누어야 함.
+  //TODO: 포인트 기능 추가. 문제를 맞추거나 등록하면 포인트를 얻을 수 있음.
   @Column({
     type: 'enum',
     enum: RoleEnum,

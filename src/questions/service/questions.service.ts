@@ -8,6 +8,7 @@ import { QuestionDetails } from '../entities/questionDetails.entity';
 import { QuestionExplains } from '../entities/questionExplains.entity';
 import { CreateQuestionExplainsDto } from '../dto/question/createQuestionExplains.dto';
 import { checkNumberString } from 'libs/validator/numberString.validator';
+import { Round } from '../entities/round.entity';
 
 @Injectable()
 export class QuestionsService {
@@ -18,15 +19,22 @@ export class QuestionsService {
     private questionDetailsRepository: Repository<QuestionDetails>,
     @InjectRepository(QuestionExplains)
     private questionExplainsRepository: Repository<QuestionExplains>,
+    @InjectRepository(Round)
+    private roundRepository: Repository<Round>,
   ) {}
 
   async createQuestion(
     createQuestionDto: CreateQuestionDto,
   ): Promise<Question> {
+    const round = await this.roundRepository.findOne({
+      where: { id: Number(createQuestionDto.roundId) },
+    });
+
     const question = new Question();
     question.title = createQuestionDto.title;
     question.content = createQuestionDto.content;
     question.image = createQuestionDto.image;
+    question.round = round;
     return this.questionRepository.save(question);
   }
 

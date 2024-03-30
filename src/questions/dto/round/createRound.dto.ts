@@ -1,6 +1,11 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Round } from '@src/questions/entities/round.entity';
-import { IsNumberString, IsOptional, Matches } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  Matches,
+} from 'class-validator';
 
 export class CreateRoundDto extends PickType(Round, ['name']) {
   @ApiProperty({
@@ -26,5 +31,6 @@ export class CreateRoundDto extends PickType(Round, ['name']) {
     example: 1,
   })
   @IsNumberString()
+  @IsNotEmpty()
   categoryId: string;
 }

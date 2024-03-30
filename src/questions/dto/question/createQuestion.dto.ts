@@ -1,5 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Question } from '../../entities/question.entity';
+import { IsNotEmpty, IsNumberString } from 'class-validator';
 
 export class CreateQuestionDto extends PickType(Question, [
   'title',
@@ -30,4 +31,12 @@ export class CreateQuestionDto extends PickType(Question, [
       'https://hellocbt.com/files/attach/images/2024/01/07/d3d842b45c93e061f889e40bbbc28da4.png',
   })
   image: string;
+
+  @ApiProperty({
+    description: '회차 ID',
+    example: 1,
+  })
+  @IsNumberString()
+  @IsNotEmpty()
+  roundId: string;
 }

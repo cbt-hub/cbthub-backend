@@ -41,6 +41,15 @@ export class CategoriesController {
   }
 
   /**
+   * @description Category 단일 조회
+   */
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    this.logger.debug('Getting a category');
+    return await this.categoryService.getCategory(id);
+  }
+
+  /**
    * @description Category 수정
    */
   @Put(':id')

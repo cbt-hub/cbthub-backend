@@ -34,6 +34,14 @@ export class CategoriesService {
     });
   }
 
+  async getCategory(id: string): Promise<Category> {
+    checkNumberString(id);
+
+    return this.categoryRepository.findOne({
+      where: { id: Number(id) },
+    });
+  }
+
   async updateCategory(
     updateCategoryDto: UpdateCategoryDto,
     id: string,

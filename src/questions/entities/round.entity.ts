@@ -45,7 +45,7 @@ export class Round {
   })
   questions: Question[];
 
-  @ManyToOne(() => Category, (category) => category.Rounds)
+  @ManyToOne(() => Category, (category) => category.rounds)
   @ApiProperty({
     description: '회차가 속한 카테고리',
     example: '1회차가 속한 카테고리',

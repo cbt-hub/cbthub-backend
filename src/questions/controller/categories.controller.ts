@@ -7,12 +7,14 @@ import {
   Param,
   Post,
   Put,
+  Req,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Admin } from 'libs/decorator/admin.decorator';
 import { CreateCategoryDto } from '../dto/category/createCategory.dto';
 import { CategoriesService } from '../service/categories.service';
 import { UpdateCategoryDto } from '../dto/category/updateCategory.dto';
+import { GetRoundDto } from '../dto/round/getRound.dto';
 
 @ApiTags('categories')
 @Controller('v1/categories')
@@ -47,6 +49,23 @@ export class CategoriesController {
   async findOne(@Param('id') id: string) {
     this.logger.debug('Getting a category');
     return await this.categoryService.getCategory(id);
+  }
+
+  /**
+   * @description Category 단일 조회 시 관련된 Round 전체 조회
+   * - 로그인 : 진행률 표시
+   */
+  @Get(':id/rounds')
+  @ApiBearerAuth('OAuth2PasswordBearer')
+  async findRounds(
+    @Param('id') id: string,
+    @Req() req: any,
+  ): Promise<GetRoundDto[]> {
+    this.logger.debug('Getting all rounds in a category');
+    const token = req.headers.authorization
+      ? req.headers.authorization.split(' ')[1]
+      : null;
+    return await this.categoryService.getRoundsInCategory(id, token);
   }
 
   /**

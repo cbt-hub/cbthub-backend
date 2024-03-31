@@ -79,8 +79,8 @@ export class QuestionsController {
    * - 로그인 안 한 사용자: 로그인 페이지로 이동 O
    * - 로그인 한 사용자: 해당 회차(round)를 처음 풀었는지 여부에 따라 다른 로직
    */
-  @ApiBearerAuth('OAuth2PasswordBearer')
   @Post(':id/solve')
+  @ApiBearerAuth('OAuth2PasswordBearer')
   async solve(
     @Param('id') questionId: string,
     @Body() questionSolveDto: QuestionSolveDto,

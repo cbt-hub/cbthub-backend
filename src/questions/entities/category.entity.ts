@@ -32,7 +32,7 @@ export class Category {
     description: '카테고리에 포함된 문제들',
     example: '네트워크관리사 2급에 포함된 문제들',
   })
-  Rounds: Round[];
+  rounds: Round[];
 
   @CreateDateColumn()
   @ApiProperty({

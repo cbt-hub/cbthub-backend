@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from '../entities/category.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateCategoryDto } from '../dto/category/createCategory.dto';
 import { GetCategoryDto } from '../dto/category/getCategory.dto';
 import { UpdateCategoryDto } from '../dto/category/updateCategory.dto';
 import { checkNumberString } from 'libs/validator/numberString.validator';
+import { Round } from '../entities/round.entity';
+import { GetRoundDto } from '../dto/round/getRound.dto';
+import { decode } from 'jsonwebtoken';
+import { User } from '@src/users/entities/user.entity';
+import { validateToken } from 'libs/validator/token.validator';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(Round)
+    private roundRepository: Repository<Round>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async createCategory(
@@ -34,11 +43,49 @@ export class CategoriesService {
     });
   }
 
-  async getCategory(id: string): Promise<Category> {
+  async getCategory(id: string): Promise<GetCategoryDto> {
     checkNumberString(id);
 
-    return this.categoryRepository.findOne({
+    const category = this.categoryRepository.findOne({
       where: { id: Number(id) },
+    });
+    const getCategoryDto = new GetCategoryDto();
+    getCategoryDto.name = (await category).name;
+    getCategoryDto.createdAt = (await category).createdAt;
+    return getCategoryDto;
+  }
+
+  async getRoundsInCategory(id: string, token: string): Promise<GetRoundDto[]> {
+    checkNumberString(id);
+
+    let isLogin = false;
+    let userId;
+    if (token && validateToken(token)) {
+      isLogin = true;
+      const user = await this.userRepository.findOne({
+        where: { uuid: decode(token)['uuid'] },
+      });
+      userId = user.id;
+    }
+
+    const category = await this.categoryRepository.findOne({
+      where: { id: Number(id) },
+      relations: ['rounds'],
+    });
+
+    return category.rounds.map((round) => {
+      const getRoundDto = new GetRoundDto();
+      getRoundDto.name = round.name;
+      getRoundDto.heldAt = round.heldAt;
+      getRoundDto.createdAt = round.createdAt;
+
+      /**
+       * @description 로그인 시 진행률 표시
+       * - 진행률 : questionStatus : userId = 로그인 한 유
+       */
+      if (isLogin) {
+      }
+      return getRoundDto;
     });
   }
 

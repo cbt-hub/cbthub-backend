@@ -52,6 +52,14 @@ export class QuestionStatus {
   @Optional()
   questionDetailsId: number;
 
+  @Column({ nullable: false })
+  @IsNumber()
+  @ApiProperty({
+    description: '회차 ID',
+    example: 1,
+  })
+  roundId: number;
+
   @ManyToOne(() => Question, (question) => question.statuses)
   question: Question;
 

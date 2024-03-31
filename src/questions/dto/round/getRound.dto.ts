@@ -1,5 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Round } from '@src/questions/entities/round.entity';
+import { IsOptional } from 'class-validator';
 
 export class GetRoundDto extends PickType(Round, [
   'name',
@@ -19,10 +20,39 @@ export class GetRoundDto extends PickType(Round, [
   heldAt: Date;
 
   @ApiProperty({
-    description: '진행률',
+    description: '진행률 - (전체 - SKIP)/전체',
     example: 66.7,
   })
+  @IsOptional()
   progressRate: number;
+
+  @ApiProperty({
+    description: 'SKIPPED 문제 수',
+    example: 5,
+  })
+  @IsOptional()
+  skippedCount: number;
+
+  @ApiProperty({
+    description: 'SOLVED_WRONG 문제 수',
+    example: 10,
+  })
+  @IsOptional()
+  solvedWrongCount: number;
+
+  @ApiProperty({
+    description: 'SOLVED_CORRECT 문제 수',
+    example: 15,
+  })
+  @IsOptional()
+  solvedCorrectCount: number;
+
+  @ApiProperty({
+    description: 'SOLVED_WRONG_CORRECT 문제 수',
+    example: 10,
+  })
+  @IsOptional()
+  solvedWrongCorrectCount: number;
 
   @ApiProperty({
     description: '생성 날짜',

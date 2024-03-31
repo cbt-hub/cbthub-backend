@@ -118,6 +118,7 @@ export class QuestionsService {
       }),
       this.userRepository.findOneBy({ uuid: userUuid }),
     ]);
+    this.logger.debug(`question: ${JSON.stringify(question)}`);
 
     // questionId와 userId로 questionStatus 조회
     const isNotNullQuestionStatus = await this.questionStatusRepository.findOne(
@@ -128,6 +129,7 @@ export class QuestionsService {
 
     // 처음 푸는 문제인 경우, 해당 회차의 모든 문제에 대한 questionStatus 생성
     if (!isNotNullQuestionStatus) {
+      this.logger.debug(`question.round.id: ${question.round.id}`);
       const questions = await this.questionRepository.find({
         where: { round: { id: question.round.id } },
       });
@@ -137,10 +139,11 @@ export class QuestionsService {
       }
 
       await Promise.all(
-        questions.map((question) => {
+        questions.map((q) => {
           const questionStatus = new QuestionStatus();
-          questionStatus.question = question;
+          questionStatus.question = q;
           questionStatus.user = user;
+          questionStatus.roundId = Number(question.round.id);
           return this.questionStatusRepository.save(questionStatus);
         }),
       );

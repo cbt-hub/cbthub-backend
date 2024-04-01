@@ -12,8 +12,8 @@ import {
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Admin } from 'libs/decorator/admin.decorator';
 import { CreateRoundDto } from '../dto/round/createRound.dto';
-import { RoundsService } from '../service/rounds.service';
 import { UpdateRoundDto } from '../dto/round/updateRound.dto';
+import { RoundsService } from '../service/rounds.service';
 
 @ApiTags('rounds')
 @Controller('v1/rounds')
@@ -34,20 +34,18 @@ export class RoundsController {
 
   /**
    * @description Round 클릭 시, question 단일 조회
-   *
-   * TODO: ROUND를 클릭 했을 때,
-   * - 로그인 한 유저라면 해당 ROUND의 첫번째 문제로
-   * - 만약 유저가 처음으로 ROUND를 클릭하면 첫번째 문제로
-   * - 만약 유저가 중간에 풀다가 나갔다 다시 들어오면 마지막으로 풀었던 문제로
+   * - 로그인 X ➡️ 첫번째 문제로
+   * - 로그인 O, 처음 푸는 문제 ➡️ 첫번째 문제로
+   * - 로그인 O, 풀었다가 다시 돌아온 경우 ➡️ 마지막으로 풀었던 문제로
    */
   @Get(':id/question')
   @ApiBearerAuth('OAuth2PasswordBearer')
-  async getQuestion(@Param('id') id: string, @Req() req: any) {
+  async getQuestion(@Param('id') roundId: string, @Req() req: any) {
     this.logger.debug('Getting questions');
     const token = req.headers.authorization
       ? req.headers.authorization.split(' ')[1]
       : null;
-    return await this.roundService.getQuestionRoundClick(id, token);
+    return await this.roundService.getQuestionRoundClick(roundId, token);
   }
 
   /**

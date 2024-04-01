@@ -56,4 +56,14 @@ export class RoundsService {
 
     return this.roundRepository.save(round);
   }
+
+  async deleteRound(id: string) {
+    checkNumberString(id);
+    const round = await this.roundRepository.findOne({
+      where: { id: Number(id) },
+    });
+
+    round.deletedAt = new Date();
+    return this.categoryRepository.save(round);
+  }
 }

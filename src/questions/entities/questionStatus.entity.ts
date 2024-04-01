@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber } from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -42,6 +42,14 @@ export class QuestionStatus {
     example: 'SOLVE_CORRECT',
   })
   status: QuestionStatusEnum;
+
+  @Column({ nullable: true, default: false })
+  @IsBoolean()
+  @ApiProperty({
+    description: '사용자가 마지막으로 풀이한 문제인지 확인',
+    example: true,
+  })
+  isLast: boolean;
 
   @Column({ nullable: true })
   @IsNumber()

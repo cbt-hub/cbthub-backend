@@ -64,6 +64,7 @@ export class CategoriesService {
   /**
    * @description 진행률을 계산하여 getRoundDto[]를 반환
    * FIXME: 만약 회원이 문제를 푸는 와중에 question에 CRD가 일어난다면? 꼬임..
+   * - 추후 수정 필요: 우선순위 중
    */
   async getRoundsInCategory(id: string, token: string): Promise<GetRoundDto[]> {
     checkNumberString(id);

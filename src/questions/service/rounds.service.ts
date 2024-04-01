@@ -6,6 +6,8 @@ import { CreateRoundDto } from '../dto/round/createRound.dto';
 import { Category } from '../entities/category.entity';
 import { convertYyyymmddToDate } from 'libs/utils/date.util';
 import { GetRoundDto } from '../dto/round/getRound.dto';
+import { UpdateRoundDto } from '../dto/round/updateRound.dto';
+import { checkNumberString } from 'libs/validator/numberString.validator';
 
 @Injectable()
 export class RoundsService {
@@ -39,5 +41,19 @@ export class RoundsService {
     console.log(`round: ${JSON.stringify(round)}`);
 
     return null;
+  }
+
+  async updateRound(updateRoundDto: UpdateRoundDto, id: string) {
+    checkNumberString(id);
+    const round = await this.roundRepository.findOne({
+      where: { id: Number(id) },
+    });
+
+    if (updateRoundDto.heldAt) {
+      round.heldAt = convertYyyymmddToDate(updateRoundDto.heldAt);
+    }
+    round.name = updateRoundDto.name;
+
+    return this.roundRepository.save(round);
   }
 }

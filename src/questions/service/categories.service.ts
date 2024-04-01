@@ -1,7 +1,7 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from '../entities/category.entity';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateCategoryDto } from '../dto/category/createCategory.dto';
 import { GetCategoryDto } from '../dto/category/getCategory.dto';
 import { UpdateCategoryDto } from '../dto/category/updateCategory.dto';
@@ -11,6 +11,10 @@ import { GetRoundDto } from '../dto/round/getRound.dto';
 import { decode } from 'jsonwebtoken';
 import { User } from '@src/users/entities/user.entity';
 import { validateToken } from 'libs/validator/token.validator';
+import {
+  QuestionStatus,
+  QuestionStatusEnum,
+} from '../entities/questionStatus.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -21,6 +25,8 @@ export class CategoriesService {
     private roundRepository: Repository<Round>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(QuestionStatus)
+    private questionStatusRepository: Repository<QuestionStatus>,
   ) {}
 
   async createCategory(
@@ -55,6 +61,10 @@ export class CategoriesService {
     return getCategoryDto;
   }
 
+  /**
+   * @description 진행률을 계산하여 getRoundDto[]를 반환
+   * FIXME: 만약 회원이 문제를 푸는 와중에 question에 CRD가 일어난다면? 꼬임..
+   */
   async getRoundsInCategory(id: string, token: string): Promise<GetRoundDto[]> {
     checkNumberString(id);
 
@@ -73,20 +83,77 @@ export class CategoriesService {
       relations: ['rounds'],
     });
 
-    return category.rounds.map((round) => {
-      const getRoundDto = new GetRoundDto();
-      getRoundDto.name = round.name;
-      getRoundDto.heldAt = round.heldAt;
-      getRoundDto.createdAt = round.createdAt;
+    return await Promise.all(
+      category.rounds.map(async (round) => {
+        const getRoundDto = new GetRoundDto();
+        getRoundDto.name = round.name;
+        getRoundDto.heldAt = round.heldAt;
+        getRoundDto.createdAt = round.createdAt;
 
-      /**
-       * @description 로그인 시 진행률 표시
-       * - 진행률 : questionStatus : userId = 로그인 한 유
-       */
-      if (isLogin) {
-      }
-      return getRoundDto;
-    });
+        /**
+         * @description 로그인 시 진행률 표시
+         * - userId, roundId (round.id)
+         * - 이 둘을 questionStatus에서 where 조건으로 검색하여
+         * - SOLVED_CORRECT, SOLVED_WRONG, SOLVED_WRONG_CORRECT, SKIPPED의 개수를 구함
+         */
+        if (isLogin) {
+          const [
+            solvedCorrectCount,
+            solvedWrongCount,
+            solvedWrongCorrectCount,
+            skippedCount,
+          ] = await Promise.all([
+            this.questionStatusRepository.count({
+              where: {
+                roundId: round.id,
+                user: { id: userId },
+                status: QuestionStatusEnum.SOLVED_CORRECT,
+              },
+            }),
+            this.questionStatusRepository.count({
+              where: {
+                roundId: round.id,
+                user: { id: userId },
+                status: QuestionStatusEnum.SOLVED_WRONG,
+              },
+            }),
+            this.questionStatusRepository.count({
+              where: {
+                roundId: round.id,
+                user: { id: userId },
+                status: QuestionStatusEnum.SOLVED_WRONG_CORRECT,
+              },
+            }),
+            this.questionStatusRepository.count({
+              where: {
+                roundId: round.id,
+                user: { id: userId },
+                status: QuestionStatusEnum.SKIPPED,
+              },
+            }),
+          ]);
+
+          // 이 부분 소수점 첫째 자리에서 반올림 해 주세요.
+          getRoundDto.progressRate = Math.round(
+            (100 *
+              (solvedCorrectCount +
+                solvedWrongCount +
+                solvedWrongCorrectCount)) /
+              (solvedCorrectCount +
+                solvedWrongCount +
+                solvedWrongCorrectCount +
+                skippedCount),
+          );
+
+          getRoundDto.skippedCount = skippedCount;
+          getRoundDto.solvedWrongCount = solvedWrongCount;
+          getRoundDto.solvedCorrectCount = solvedCorrectCount;
+          getRoundDto.solvedWrongCorrectCount = solvedWrongCorrectCount;
+        }
+
+        return getRoundDto;
+      }),
+    );
   }
 
   async updateCategory(

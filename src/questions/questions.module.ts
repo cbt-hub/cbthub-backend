@@ -11,8 +11,8 @@ import { Category } from './entities/category.entity';
 import { Round } from './entities/round.entity';
 import { QuestionStatus } from './entities/questionStatus.entity';
 import { RoundsController } from './controller/rounds.controller';
-import { RoundsService } from './service/rounds.service';
 import { User } from '@src/users/entities/user.entity';
+import { RoundsService } from './service/rounds.service';
 
 @Module({
   imports: [

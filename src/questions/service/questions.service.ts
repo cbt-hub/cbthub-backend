@@ -181,12 +181,27 @@ export class QuestionsService {
       status = QuestionStatusEnum.SOLVED_WRONG_CORRECT;
     }
 
+    // 마지막으로 푼 문제 기록
+    const lastNums = await this.questionStatusRepository.find({
+      where: { user: { id: user.id }, isLast: true },
+    });
+
+    if (lastNums.length > 0) {
+      await Promise.all(
+        lastNums.map(async (lastNum) => {
+          lastNum.isLast = false;
+          await this.questionStatusRepository.save(lastNum);
+        }),
+      );
+    }
+
     // questionStatus 업데이트
     questionStatus.questionDetailsId = Number(
       questionSolveDto.questionDetailsId,
     );
     questionStatus.status = status;
     questionStatus.updatedAt = new Date();
+    questionStatus.isLast = true; // 마지막으로 푼 문제 기록
     return this.questionStatusRepository.save(questionStatus);
   }
 }

@@ -5,9 +5,10 @@ import { Round } from '../entities/round.entity';
 import { CreateRoundDto } from '../dto/round/createRound.dto';
 import { Category } from '../entities/category.entity';
 import { convertYyyymmddToDate } from 'libs/utils/date.util';
-import { GetRoundDto } from '../dto/round/getRound.dto';
 import { UpdateRoundDto } from '../dto/round/updateRound.dto';
 import { checkNumberString } from 'libs/validator/numberString.validator';
+import { decode } from 'jsonwebtoken';
+import { User } from '@src/users/entities/user.entity';
 
 @Injectable()
 export class RoundsService {
@@ -16,6 +17,8 @@ export class RoundsService {
     private roundRepository: Repository<Round>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async createRound(createRoundDto: CreateRoundDto): Promise<Round> {
@@ -33,12 +36,20 @@ export class RoundsService {
     return this.roundRepository.save(round);
   }
 
-  async getRounds(): Promise<GetRoundDto[]> {
-    const round = await this.roundRepository.find({
-      relations: ['category'],
+  async getQuestionRoundClick(id: string, token: string) {
+    checkNumberString(id);
+
+    const round = await this.roundRepository.findOne({
+      where: { id: Number(id) },
     });
 
-    console.log(`round: ${JSON.stringify(round)}`);
+    const user = await this.userRepository.findOne({
+      where: { id: decode(token)['uuid'] },
+    });
+
+    // const questionStatus = await this.questionStatusRepository.findOne({
+    //   where: { user, round },
+    // });
 
     return null;
   }

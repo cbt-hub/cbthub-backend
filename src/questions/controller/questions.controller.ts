@@ -69,9 +69,9 @@ export class QuestionsController {
   }
 
   /**
-   * TODO: Question 조회 기능 추가
-   * @description Question 조회
-   * - QuestionDetails, QuestionExplains도 함께 조회
+   * TODO: Question UD
+   * TODO: QuestionExplains UD
+   * TODO: QuestionDetails UD
    */
 
   /**

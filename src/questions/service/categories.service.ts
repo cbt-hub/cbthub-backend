@@ -43,6 +43,7 @@ export class CategoriesService {
     });
     return (await categories).map((category) => {
       const getCategoryDto = new GetCategoryDto();
+      getCategoryDto.id = category.id;
       getCategoryDto.name = category.name;
       getCategoryDto.createdAt = category.createdAt;
       return getCategoryDto;

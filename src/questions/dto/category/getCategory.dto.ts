@@ -3,6 +3,11 @@ import { Category } from '@src/questions/entities/category.entity';
 
 export class GetCategoryDto extends PickType(Category, ['name', 'createdAt']) {
   @ApiProperty({
+    description: '카테고리 ID',
+    example: 1,
+  })
+  id: number;
+  @ApiProperty({
     description: '카테고리 이름',
     example: '네트워크',
   })

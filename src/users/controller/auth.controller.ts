@@ -2,6 +2,7 @@ import { Body, Controller, Logger, Post } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { SignInDto } from '../dto/auth/sign-in.dto';
+import { VerifyTokenDto } from '../dto/auth/verifyToken.dto';
 
 //TODO: refresh token 기능 추가 - redis 사용
 //TODO: 로그아웃 기능 추가
@@ -27,6 +28,7 @@ export class AuthController {
    * @description JWT 토큰 유효성 검사
    */
   @Post('verify')
+  @ApiBody({ type: VerifyTokenDto })
   async verify(@Body() { access_token: accessToken }) {
     this.logger.debug(`Verifying token ${accessToken}`);
     return this.authService.verify(accessToken);

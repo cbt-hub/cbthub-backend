@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './users.service';
 import * as bcrypt from 'bcrypt';
 import { jwtConstants } from 'config/envs/secrets/jwt.constants';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class AuthService {
@@ -46,5 +47,19 @@ export class AuthService {
         secret: jwtConstants.secret,
       }),
     };
+  }
+
+  /**
+   * @description JWT 토큰 유효성 검사
+   */
+  async verify(accessToken: string): Promise<any> {
+    try {
+      // jwt.verify 메서드를 사용하여 토큰 검증
+      const decoded = jwt.verify(accessToken, jwtConstants.secret);
+      return { valid: true, decoded };
+    } catch (error) {
+      // 유효하지 않은 경우 에러 처리
+      throw new UnauthorizedException('유효하지 않거나 만료된 토큰입니다.');
+    }
   }
 }

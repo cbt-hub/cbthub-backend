@@ -13,7 +13,7 @@ export class AuthController {
 
   /**
    * NOTE: @Body SignInDto로 전달받지 않는 이유
-   * - swagger의 OAuth2PasswordBearer 기능을 사용하기 위해 DTO로 전달 받지 않는다.
+   * - cuz: swagger의 OAuth2PasswordBearer 기능을 사용하기 위해 DTO로 전달 받지 않는다.
    * - DTO로 전달 받으면 `grant_type`으로 인식되어 swagger에서 테스트할 수 없다.
    */
   @Post('signin')
@@ -21,5 +21,14 @@ export class AuthController {
   async signIn(@Body() { username, password }) {
     this.logger.debug(`Signing in with ${username}, ${password}`);
     return this.authService.signIn(username, password);
+  }
+
+  /**
+   * @description JWT 토큰 유효성 검사
+   */
+  @Post('verify')
+  async verify(@Body() { access_token: accessToken }) {
+    this.logger.debug(`Verifying token ${accessToken}`);
+    return this.authService.verify(accessToken);
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Logger, Post, Req } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { SignInDto } from '../dto/auth/sign-in.dto';
@@ -29,8 +29,11 @@ export class AuthController {
    */
   @Post('verify')
   @ApiBody({ type: VerifyTokenDto })
-  async verify(@Body() { access_token: accessToken }) {
-    this.logger.debug(`Verifying token ${accessToken}`);
-    return this.authService.verify(accessToken);
+  async verify(@Req() req: any) {
+    this.logger.debug('Getting questions');
+    const token = req.headers.authorization
+      ? req.headers.authorization.split(' ')[1]
+      : null;
+    return this.authService.verify(token);
   }
 }

@@ -88,6 +88,7 @@ export class CategoriesService {
     return await Promise.all(
       category.rounds.map(async (round) => {
         const getRoundDto = new GetRoundDto();
+        getRoundDto.id = round.id;
         getRoundDto.name = round.name;
         getRoundDto.heldAt = round.heldAt;
         getRoundDto.createdAt = round.createdAt;

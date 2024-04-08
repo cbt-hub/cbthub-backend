@@ -3,6 +3,7 @@ import { Round } from '@src/questions/entities/round.entity';
 import { IsOptional } from 'class-validator';
 
 export class GetRoundDto extends PickType(Round, [
+  'id',
   'name',
   'heldAt',
   'createdAt',

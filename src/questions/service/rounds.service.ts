@@ -117,6 +117,38 @@ export class RoundsService {
     return dto;
   }
 
+  async getSpecificQuestion(
+    questionId: string,
+  ): Promise<GetQuestionRoundClickDto> {
+    // questionId로 질문 조회 로직 구현
+    const question = await this.questionRepository.findOne({
+      relations: ['details', 'explains', 'explains.question'],
+      where: { id: Number(questionId) },
+    });
+
+    if (!question) {
+      throw new Error('Question not found');
+    }
+
+    const dto = new GetQuestionRoundClickDto();
+    dto.id = question.id;
+    dto.title = question.title;
+    dto.content = question.content;
+    dto.createdAt = question.createdAt;
+    dto.details = question.details.map((detail) => {
+      const detailDto = new QuestionDetailsDto();
+      Object.assign(detailDto, detail);
+      return detailDto;
+    });
+    dto.explains = question.explains.map((explain) => {
+      const explainDto = new QuestionExplainsDto();
+      Object.assign(explainDto, explain);
+      return explainDto;
+    });
+
+    return dto;
+  }
+
   async updateRound(updateRoundDto: UpdateRoundDto, id: string) {
     checkNumberString(id);
     const round = await this.roundRepository.findOne({

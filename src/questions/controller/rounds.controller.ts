@@ -7,13 +7,15 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Admin } from 'libs/decorator/admin.decorator';
 import { CreateRoundDto } from '../dto/round/createRound.dto';
 import { UpdateRoundDto } from '../dto/round/updateRound.dto';
 import { RoundsService } from '../service/rounds.service';
+import { GetQuestionRoundClickDto } from '../dto/round/getQuestionRoundClick.dto';
 
 @ApiTags('rounds')
 @Controller('v1/rounds')
@@ -37,14 +39,29 @@ export class RoundsController {
    * - 로그인 X ➡️ 첫번째 문제로
    * - 로그인 O, 처음 푸는 문제 ➡️ 첫번째 문제로
    * - 로그인 O, 풀었다가 다시 돌아온 경우 ➡️ 마지막으로 풀었던 문제로
+   *
+   * @param roundId
+   * @param id - questionId
+   * - 만약 questionId가 있으면 해당 questionId로 조회
+   * - 없으면 유저가 풀었던 가장 마지막 문제로 조회
    */
-  @Get(':id/question')
+  @Get(':roundId/question')
   @ApiBearerAuth('OAuth2PasswordBearer')
-  async getQuestion(@Param('id') roundId: string, @Req() req: any) {
+  @ApiQuery({ name: 'id', required: false })
+  async getQuestion(
+    @Param('roundId') roundId: string,
+    @Query('id') questionId: string, // 쿼리스트링으로 questionId 받기
+    @Req() req: any,
+  ): Promise<GetQuestionRoundClickDto> {
     this.logger.debug('Getting questions');
     const token = req.headers.authorization
       ? req.headers.authorization.split(' ')[1]
       : null;
+
+    if (questionId) {
+      return await this.roundService.getSpecificQuestion(questionId);
+    }
+
     return await this.roundService.getQuestionRoundClick(roundId, token);
   }
 

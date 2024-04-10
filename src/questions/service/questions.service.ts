@@ -73,26 +73,25 @@ export class QuestionsService {
     // 삭제하려는 문제를 찾습니다.
     const questionToDelete = await this.questionRepository.findOne({
       where: { id: questionId },
+      relations: ['round'],
     });
 
     if (!questionToDelete) {
       throw new NotFoundException(`Question with ID ${questionId} not found`);
     }
 
-    // 문제의 order 값을 저장합니다.
-    const deletedOrder = questionToDelete.order;
-
-    // 문제를 하드 삭제합니다.
-    await this.questionRepository.delete({ id: questionId });
+    // 문제를 삭제합니다.
+    await this.questionRepository.softDelete({ id: questionId });
 
     // 삭제된 문제의 order 값보다 큰 모든 문제들의 order 값을 갱신합니다.
     await this.questionRepository
       .createQueryBuilder()
       .update(Question)
       .set({
-        order: () => '"order" - 1', // order 값을 1 감소시킵니다.
+        order: () => '`order` - 1', // order 값을 1 감소시킵니다.
       })
-      .where('"order" > :order', { order: deletedOrder })
+      .where('`order` > :order', { order: questionToDelete.order })
+      .andWhere('`roundId` = :roundId', { roundId: questionToDelete.round.id })
       .execute();
   }
 

@@ -44,6 +44,7 @@ export class QuestionsController {
    * @description question 삭제
    */
   @Delete(':id')
+  @Admin()
   async deleteQuestion(@Param('id') id: string): Promise<void> {
     await this.questionService.deleteQuestion(Number(id));
   }

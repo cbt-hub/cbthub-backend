@@ -61,7 +61,14 @@ export class Question {
   @IsOptional()
   image: string | null;
 
-  @OneToMany(() => QuestionDetails, (details) => details.question, {
+  @Column({ nullable: false })
+  @ApiProperty({
+    description: '순서',
+    example: '1',
+  })
+  order: number;
+
+  @OneToMany(() => QuestionExplains, (explains) => explains.question, {
     onDelete: 'CASCADE',
   })
   details: QuestionDetails[];
@@ -71,7 +78,7 @@ export class Question {
   })
   explains: QuestionExplains[];
 
-  @OneToMany(() => QuestionStatus, (status) => status.question, {
+  @OneToMany(() => QuestionExplains, (explains) => explains.question, {
     onDelete: 'CASCADE',
   })
   statuses: QuestionStatus[];

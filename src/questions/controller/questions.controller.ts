@@ -1,4 +1,12 @@
-import { Body, Controller, Logger, Param, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Logger,
+  Param,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { QuestionsService } from '../service/questions.service';
 import { CreateQuestionDto } from '../dto/question/createQuestion.dto';
@@ -30,6 +38,15 @@ export class QuestionsController {
   async create(@Body() createQuestionDto: CreateQuestionDto) {
     this.logger.debug('Creating a question');
     return await this.questionService.createQuestion(createQuestionDto);
+  }
+
+  /**
+   * @description question 삭제
+   */
+  @Delete(':id')
+  @Admin()
+  async deleteQuestion(@Param('id') id: string): Promise<void> {
+    await this.questionService.deleteQuestion(Number(id));
   }
 
   /**

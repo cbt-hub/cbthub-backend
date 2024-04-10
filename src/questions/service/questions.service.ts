@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question } from '../entities/question.entity';
 import { Repository } from 'typeorm';
@@ -45,11 +45,24 @@ export class QuestionsService {
       where: { id: Number(createQuestionDto.roundId) },
     });
 
+    if (!round) {
+      throw new NotFoundException(
+        `Round with ID ${createQuestionDto.roundId} not found`,
+      );
+    }
+
+    // 해당 라운드에 속한 모든 문제들의 수를 찾습니다.
+    const questionsCount = await this.questionRepository.count({
+      where: { round: { id: round.id } },
+    });
+
     const question = new Question();
     question.title = createQuestionDto.title;
     question.content = createQuestionDto.content;
     question.image = createQuestionDto.image;
     question.round = round;
+    question.order = questionsCount + 1;
+
     return this.questionRepository.save(question);
   }
 

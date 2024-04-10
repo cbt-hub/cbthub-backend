@@ -61,6 +61,13 @@ export class Question {
   @IsOptional()
   image: string | null;
 
+  @Column({ nullable: false })
+  @ApiProperty({
+    description: '순서',
+    example: '1',
+  })
+  order: number;
+
   @OneToMany(() => QuestionDetails, (details) => details.question, {
     onDelete: 'CASCADE',
   })

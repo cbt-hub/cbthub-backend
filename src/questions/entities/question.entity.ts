@@ -68,7 +68,7 @@ export class Question {
   })
   order: number;
 
-  @OneToMany(() => QuestionExplains, (explains) => explains.question, {
+  @OneToMany(() => QuestionDetails, (explains) => explains.question, {
     onDelete: 'CASCADE',
   })
   details: QuestionDetails[];

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Round } from '../entities/round.entity';
@@ -21,6 +21,7 @@ import {
 
 @Injectable()
 export class RoundsService {
+  private readonly logger = new Logger(RoundsService.name);
   constructor(
     @InjectRepository(Round)
     private roundRepository: Repository<Round>,
@@ -122,31 +123,46 @@ export class RoundsService {
     questionId: string,
   ): Promise<GetQuestionRoundClickDto> {
     // questionId로 질문 조회 로직 구현
-    const question = await this.questionRepository.findOne({
-      relations: ['details', 'explains', 'explains.question'],
-      where: { id: Number(questionId) },
-    });
+    const [questionForDetails, questionForExplains, question] =
+      await Promise.all([
+        this.questionRepository.findOne({
+          relations: ['details'],
+          where: { id: Number(questionId) },
+        }),
+        this.questionRepository.findOne({
+          relations: ['explains'],
+          where: { id: Number(questionId) },
+        }),
+        this.questionRepository.findOne({
+          relations: ['round'],
+          where: { id: Number(questionId) },
+        }),
+      ]);
 
-    const questionCount = await this.questionRepository.count({
-      relations: ['round'],
-      where: { round: { id: question.round.id } },
-    });
+    this.logger.debug(
+      `Getting specific question : ${JSON.stringify(questionForDetails, null, 2)}`,
+    );
 
-    if (!question) {
+    if (!question || !question.round) {
       throw new Error('Question not found');
     }
+
+    // 여기서 question.round가 확실히 존재하는 상태입니다. 이제 roundId로 모든 문제의 수를 계산합니다.
+    const questionCount = await this.questionRepository.count({
+      where: { round: { id: question.round.id } },
+    });
 
     const dto = new GetQuestionRoundClickDto();
     dto.id = question.id;
     dto.title = question.title;
     dto.content = question.content;
     dto.createdAt = question.createdAt;
-    dto.details = question.details.map((detail) => {
+    dto.details = questionForDetails.details.map((detail) => {
       const detailDto = new QuestionDetailsDto();
       Object.assign(detailDto, detail);
       return detailDto;
     });
-    dto.explains = question.explains.map((explain) => {
+    dto.explains = questionForExplains.explains.map((explain) => {
       const explainDto = new QuestionExplainsDto();
       Object.assign(explainDto, explain);
       return explainDto;

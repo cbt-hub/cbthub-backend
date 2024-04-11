@@ -78,27 +78,31 @@ export class RoundsService {
 
       if (!lastQuestionStatus) {
         question = await this.questionRepository.findOne({
-          relations: ['details', 'explains', 'explains.question'],
+          relations: ['details', 'explains', 'explains.question', 'round'],
           where: { round: { id: Number(roundId) } },
           order: { id: 'ASC' },
         });
       } else {
         question = await this.questionRepository.findOne({
-          relations: ['details', 'explains', 'explains.question'],
+          relations: ['details', 'explains', 'explains.question', 'round'],
           where: { id: lastQuestionStatus.question.id },
         });
       }
     } else {
       question = await this.questionRepository.findOne({
-        relations: ['details', 'explains', 'explains.question'],
+        relations: ['details', 'explains', 'explains.question', 'round'],
         where: { round: { id: Number(roundId) } },
         order: { id: 'ASC' },
       });
     }
 
-    if (!question) {
+    if (!question || !question.round) {
       throw new Error('Question not found');
     }
+
+    const questionCount = await this.questionRepository.count({
+      where: { round: { id: question.round.id } },
+    });
 
     const dto = new GetQuestionRoundClickDto();
     dto.id = question.id;
@@ -115,6 +119,11 @@ export class RoundsService {
       Object.assign(explainDto, explain);
       return explainDto;
     });
+    dto.questionMeta = {
+      prev: question.order === 1 ? null : question.order - 1,
+      current: question.order,
+      next: questionCount === question.order ? null : question.order + 1,
+    };
 
     return dto;
   }

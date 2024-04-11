@@ -78,31 +78,39 @@ export class RoundsService {
 
       if (!lastQuestionStatus) {
         question = await this.questionRepository.findOne({
-          relations: ['details', 'explains', 'explains.question', 'round'],
+          relations: ['details', 'explains', 'explains.question'],
           where: { round: { id: Number(roundId) } },
           order: { id: 'ASC' },
         });
       } else {
         question = await this.questionRepository.findOne({
-          relations: ['details', 'explains', 'explains.question', 'round'],
+          relations: ['details', 'explains', 'explains.question'],
           where: { id: lastQuestionStatus.question.id },
         });
       }
     } else {
       question = await this.questionRepository.findOne({
-        relations: ['details', 'explains', 'explains.question', 'round'],
+        relations: ['details', 'explains', 'explains.question'],
         where: { round: { id: Number(roundId) } },
         order: { id: 'ASC' },
       });
     }
 
-    if (!question || !question.round) {
+    if (!question) {
       throw new Error('Question not found');
     }
 
-    const questionCount = await this.questionRepository.count({
-      where: { round: { id: question.round.id } },
-    });
+    const [questionPrev, questionNext] = await Promise.all([
+      this.questionRepository.findOne({
+        where: { order: question.order - 1, round: { id: Number(roundId) } },
+      }),
+      this.questionRepository.findOne({
+        where: { order: question.order + 1, round: { id: Number(roundId) } },
+      }),
+    ]);
+
+    this.logger.debug(`questionPrev: ${JSON.stringify(questionPrev)}`);
+    this.logger.debug(`questionNext: ${JSON.stringify(questionNext)}`);
 
     const dto = new GetQuestionRoundClickDto();
     dto.id = question.id;
@@ -120,9 +128,9 @@ export class RoundsService {
       return explainDto;
     });
     dto.questionMeta = {
-      prev: question.order === 1 ? null : question.order - 1,
-      current: question.order,
-      next: questionCount === question.order ? null : question.order + 1,
+      prev: questionPrev ? questionPrev.id : null,
+      current: question.id,
+      next: questionNext ? questionNext.id : null,
     };
 
     return dto;
@@ -132,54 +140,43 @@ export class RoundsService {
     questionId: string,
   ): Promise<GetQuestionRoundClickDto> {
     // questionId로 질문 조회 로직 구현
-    const [questionForDetails, questionForExplains, question] =
-      await Promise.all([
-        this.questionRepository.findOne({
-          relations: ['details'],
-          where: { id: Number(questionId) },
-        }),
-        this.questionRepository.findOne({
-          relations: ['explains'],
-          where: { id: Number(questionId) },
-        }),
-        this.questionRepository.findOne({
-          relations: ['round'],
-          where: { id: Number(questionId) },
-        }),
-      ]);
+    const question = await this.questionRepository.findOne({
+      relations: ['details', 'explains'],
+      where: { id: Number(questionId) },
+    });
 
-    this.logger.debug(
-      `Getting specific question : ${JSON.stringify(questionForDetails, null, 2)}`,
-    );
-
-    if (!question || !question.round) {
+    if (!question) {
       throw new Error('Question not found');
     }
 
-    // 여기서 question.round가 확실히 존재하는 상태입니다. 이제 roundId로 모든 문제의 수를 계산합니다.
-    const questionCount = await this.questionRepository.count({
-      where: { round: { id: question.round.id } },
-    });
+    const [prevQuestion, nextQuestion] = await Promise.all([
+      this.questionRepository.findOne({
+        where: { order: question.order - 1 },
+      }),
+      this.questionRepository.findOne({
+        where: { order: question.order + 1 },
+      }),
+    ]);
 
     const dto = new GetQuestionRoundClickDto();
     dto.id = question.id;
     dto.title = question.title;
     dto.content = question.content;
     dto.createdAt = question.createdAt;
-    dto.details = questionForDetails.details.map((detail) => {
+    dto.details = question.details.map((detail) => {
       const detailDto = new QuestionDetailsDto();
       Object.assign(detailDto, detail);
       return detailDto;
     });
-    dto.explains = questionForExplains.explains.map((explain) => {
+    dto.explains = question.explains.map((explain) => {
       const explainDto = new QuestionExplainsDto();
       Object.assign(explainDto, explain);
       return explainDto;
     });
     const questionMeta: QuestionMeta = {
-      prev: question.order === 1 ? null : question.order - 1,
+      prev: prevQuestion ? prevQuestion.order : null,
       current: question.order,
-      next: question.order === questionCount ? null : question.order + 1,
+      next: nextQuestion ? nextQuestion.order : null,
     };
     dto.questionMeta = questionMeta;
 

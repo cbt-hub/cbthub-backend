@@ -16,6 +16,7 @@ import {
   GetQuestionRoundClickDto,
   QuestionDetailsDto,
   QuestionExplainsDto,
+  QuestionMeta,
 } from '../dto/round/getQuestionRoundClick.dto';
 
 @Injectable()
@@ -126,6 +127,11 @@ export class RoundsService {
       where: { id: Number(questionId) },
     });
 
+    const questionCount = await this.questionRepository.count({
+      relations: ['round'],
+      where: { round: { id: question.round.id } },
+    });
+
     if (!question) {
       throw new Error('Question not found');
     }
@@ -145,6 +151,12 @@ export class RoundsService {
       Object.assign(explainDto, explain);
       return explainDto;
     });
+    const questionMeta: QuestionMeta = {
+      prev: question.order === 1 ? null : question.order - 1,
+      current: question.order,
+      next: question.order === questionCount ? null : question.order + 1,
+    };
+    dto.questionMeta = questionMeta;
 
     return dto;
   }

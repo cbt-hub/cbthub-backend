@@ -7,6 +7,12 @@ import {
   QuestionExplains,
 } from '@src/questions/entities/questionExplains.entity';
 
+export interface QuestionMeta {
+  prev: number | null;
+  current: number;
+  next: number | null;
+}
+
 export class QuestionDetailsDto extends PickType(QuestionDetails, [
   'id',
   'choice',
@@ -100,4 +106,14 @@ export class GetQuestionRoundClickDto extends PickType(Question, [
     description: '질문에 대한 해설들',
   })
   explains: QuestionExplainsDto[];
+
+  @ApiProperty({
+    description: '질문 메타 정보',
+    example: {
+      prev: null,
+      current: 1,
+      next: 2,
+    },
+  })
+  questionMeta: QuestionMeta;
 }

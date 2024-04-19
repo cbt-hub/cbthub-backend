@@ -14,6 +14,8 @@ import { QuestionStatus } from '../entities/questionStatus.entity';
 import { Question } from '../entities/question.entity';
 import {
   GetQuestionRoundClickDto,
+  GetQuestionRoundClickDtoV2,
+  GetQuestionRoundClickDtos,
   QuestionDetailsDto,
   QuestionExplainsDto,
   QuestionMeta,
@@ -54,6 +56,8 @@ export class RoundsService {
    * @description Round 클릭 시, question 단일 조회
    * - 로그인 하지 않았거나 로그인 했지만 처음으로 ROUND를 클릭했을 때 해당 ROUND의 첫번째 문제로
    * - 로그인 했고 중간에 풀다가 나갔다 다시 들어왔을 때 마지막으로 풀었던 문제로
+   *
+   * @deprecated 단일 조회 -> 전체 조회로 로직 변경
    */
   async getQuestionRoundClick(
     roundId: string,
@@ -136,6 +140,9 @@ export class RoundsService {
     return dto;
   }
 
+  /**
+   * @deprecated 단일 조회 -> 전체 조회로 로직 변경
+   */
   async getSpecificQuestion(
     questionId: string,
   ): Promise<GetQuestionRoundClickDto> {
@@ -181,6 +188,109 @@ export class RoundsService {
     dto.questionMeta = questionMeta;
 
     return dto;
+  }
+
+  /**
+   * @description roundId로 해당 round의 모든 question 조회
+   */
+  async getQuestionsRoundClick(
+    roundId: string,
+    token: string,
+  ): Promise<GetQuestionRoundClickDtos> {
+    checkNumberString(roundId);
+    const isValidToken = validateToken(token);
+
+    if (isValidToken) {
+      const user = await this.userRepository.findOne({
+        where: { uuid: decode(token)['uuid'] },
+      });
+
+      const [question, lastSolvedQuestion] = await Promise.all([
+        this.questionRepository
+          .createQueryBuilder('question')
+          .leftJoinAndSelect('question.details', 'details')
+          .leftJoinAndSelect('question.explains', 'explains')
+          .leftJoinAndSelect(
+            'question.statuses',
+            'statuses',
+            'statuses.user.id = :userId',
+            { userId: user.id },
+          )
+          .where('question.round.id = :roundId', { roundId: Number(roundId) })
+          .orderBy('question.order', 'ASC')
+          .getMany(),
+        this.questionStatusRepository.findOne({
+          where: {
+            roundId: Number(roundId),
+            isLast: true,
+            user: { id: user.id },
+          },
+        }),
+      ]);
+
+      const questions = question.map((question) => {
+        return {
+          id: question.id,
+          title: question.title,
+          content: question.content,
+          image: question.image,
+          order: question.order,
+          createdAt: question.createdAt,
+          details: question.details.map((detail) => {
+            const detailDto = new QuestionDetailsDto();
+            Object.assign(detailDto, detail);
+            return detailDto;
+          }),
+          explains: question.explains.map((explain) => {
+            const explainDto = new QuestionExplainsDto();
+            Object.assign(explainDto, explain);
+            return explainDto;
+          }),
+          questionStatus: question.statuses[0] || null,
+        } as GetQuestionRoundClickDtoV2;
+      });
+
+      return {
+        questions,
+        lastSolvedQId: lastSolvedQuestion
+          ? lastSolvedQuestion.id
+          : questions[0].id,
+      };
+    } else {
+      const question = await this.questionRepository
+        .createQueryBuilder('question')
+        .leftJoinAndSelect('question.details', 'details')
+        .leftJoinAndSelect('question.explains', 'explains')
+        .where('question.round.id = :roundId', { roundId: Number(roundId) })
+        .orderBy('question.order', 'ASC')
+        .getMany();
+
+      const questions = question.map((question) => {
+        return {
+          id: question.id,
+          title: question.title,
+          content: question.content,
+          image: question.image,
+          order: question.order,
+          createdAt: question.createdAt,
+          details: question.details.map((detail) => {
+            const detailDto = new QuestionDetailsDto();
+            Object.assign(detailDto, detail);
+            return detailDto;
+          }),
+          explains: question.explains.map((explain) => {
+            const explainDto = new QuestionExplainsDto();
+            Object.assign(explainDto, explain);
+            return explainDto;
+          }),
+        } as GetQuestionRoundClickDtoV2;
+      });
+
+      return {
+        questions,
+        lastSolvedQId: questions[0].id,
+      };
+    }
   }
 
   async updateRound(updateRoundDto: UpdateRoundDto, id: string) {

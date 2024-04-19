@@ -10,12 +10,21 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Admin } from 'libs/decorator/admin.decorator';
 import { CreateRoundDto } from '../dto/round/createRound.dto';
 import { UpdateRoundDto } from '../dto/round/updateRound.dto';
 import { RoundsService } from '../service/rounds.service';
-import { GetQuestionRoundClickDto } from '../dto/round/getQuestionRoundClick.dto';
+import {
+  GetQuestionRoundClickDto,
+  GetQuestionRoundClickDtos,
+} from '../dto/round/getQuestionRoundClick.dto';
 
 @ApiTags('rounds')
 @Controller('v1/rounds')
@@ -44,10 +53,14 @@ export class RoundsController {
    * @param id - questionId
    * - 만약 questionId가 있으면 해당 questionId로 조회
    * - 없으면 유저가 풀었던 가장 마지막 문제로 조회
+   *
+   * @deprecated front에서 '다음'을 클릭하면 0.2초 정도 딜레이가 생긴다.
+   * - 전체 문제를 front에서 미리 받아오는 로직으로 변경
    */
   @Get(':roundId/question')
   @ApiBearerAuth('OAuth2PasswordBearer')
   @ApiQuery({ name: 'id', required: false })
+  @ApiOperation({ deprecated: true })
   async getQuestion(
     @Param('roundId') roundId: string,
     @Query('id') questionId: string, // 쿼리스트링으로 questionId 받기
@@ -63,6 +76,25 @@ export class RoundsController {
     }
 
     return await this.roundService.getQuestionRoundClick(roundId, token);
+  }
+
+  /**
+   * @description Round 클릭 시, question 전체 조회
+   *
+   * @param roundId
+   */
+  @Get(':roundId/questions')
+  @ApiBearerAuth('OAuth2PasswordBearer')
+  async getQuestions(
+    @Param('roundId') roundId: string,
+    @Req() req: any,
+  ): Promise<GetQuestionRoundClickDtos> {
+    this.logger.debug('Getting questions');
+    const token = req.headers.authorization
+      ? req.headers.authorization.split(' ')[1]
+      : null;
+
+    return await this.roundService.getQuestionsRoundClick(roundId, token);
   }
 
   /**

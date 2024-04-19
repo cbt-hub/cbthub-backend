@@ -246,4 +246,20 @@ export class QuestionsService {
     questionStatus.isLast = true; // 마지막으로 푼 문제 기록
     return this.questionStatusRepository.save(questionStatus);
   }
+
+  /**
+   * @description Question Status 조회
+   */
+  async getQuestionStatus(
+    questionId: string,
+    token: string,
+  ): Promise<QuestionStatus> {
+    checkNumberString(questionId);
+    const userUuid = decode(token)['uuid'];
+    const user = await this.userRepository.findOneBy({ uuid: userUuid });
+
+    return this.questionStatusRepository.findOne({
+      where: { question: { id: Number(questionId) }, user: { id: user.id } },
+    });
+  }
 }

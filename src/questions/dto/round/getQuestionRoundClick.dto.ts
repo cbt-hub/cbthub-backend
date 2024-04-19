@@ -6,6 +6,7 @@ import {
   ExplainTypeEnum,
   QuestionExplains,
 } from '@src/questions/entities/questionExplains.entity';
+import { QuestionStatusEnum } from '@src/questions/entities/questionStatus.entity';
 
 export interface QuestionMeta {
   prev: number | null;
@@ -116,4 +117,33 @@ export class GetQuestionRoundClickDto extends PickType(Question, [
     },
   })
   questionMeta: QuestionMeta;
+}
+
+interface QuestionStatusDto {
+  id: number;
+  status: QuestionStatusEnum;
+  isLast: boolean;
+  questionDetailsId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * @description Round 클릭 시, question 전체 조회
+ */
+export interface GetQuestionRoundClickDtoV2 {
+  id: number;
+  title: string;
+  content?: string;
+  image?: string;
+  order: number;
+  createdAt: Date;
+  details: QuestionDetailsDto[];
+  explains: QuestionExplainsDto[];
+  questionStatus?: QuestionStatusDto;
+}
+
+export interface GetQuestionRoundClickDtos {
+  questions: GetQuestionRoundClickDtoV2[];
+  lastSolvedQId: number;
 }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Logger,
   Param,
   Post,
@@ -15,6 +16,7 @@ import { CreateQuestionDetailsDto } from '../dto/question/createQuestionDetails.
 import { CreateQuestionExplainsDto } from '../dto/question/createQuestionExplains.dto';
 import { validateToken } from 'libs/validator/token.validator';
 import { QuestionSolveDto } from '../dto/question/questionSolve.dto';
+import { Auth } from 'libs/decorator/auth.decorator';
 
 /**
  * @link https://excalidraw.com/#json=1ZKrvXZRx7clx7yYYtq0p,jvYKLo94e6wsseSrPHuNpw
@@ -118,5 +120,20 @@ export class QuestionsController {
       questionSolveDto,
       token,
     );
+  }
+
+  /**
+   * @description Question Status 조회
+   */
+  @Get(':id/status')
+  @Auth()
+  async getStatus(@Param('id') questionId: string, @Req() req: any) {
+    this.logger.debug('Getting a question status');
+
+    const token = req.headers.authorization
+      ? req.headers.authorization.split(' ')[1]
+      : null;
+
+    return await this.questionService.getQuestionStatus(questionId, token);
   }
 }

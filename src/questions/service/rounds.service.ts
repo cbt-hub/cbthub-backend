@@ -15,7 +15,7 @@ import { Question } from '../entities/question.entity';
 import {
   GetQuestionRoundClickDto,
   GetQuestionRoundClickDtoV2,
-  GetQuestionRoundClickDtos,
+  GetQuestionsRoundClickDto,
   QuestionDetailsDto,
   QuestionExplainsDto,
   QuestionMeta,
@@ -196,7 +196,7 @@ export class RoundsService {
   async getQuestionsRoundClick(
     roundId: string,
     token: string,
-  ): Promise<GetQuestionRoundClickDtos> {
+  ): Promise<GetQuestionsRoundClickDto> {
     checkNumberString(roundId);
     const isValidToken = validateToken(token);
 
@@ -225,6 +225,7 @@ export class RoundsService {
             isLast: true,
             user: { id: user.id },
           },
+          relations: ['question'],
         }),
       ]);
 
@@ -252,9 +253,9 @@ export class RoundsService {
 
       return {
         questions,
-        lastSolvedQId: lastSolvedQuestion
-          ? lastSolvedQuestion.id
-          : questions[0].id,
+        index: lastSolvedQuestion
+          ? questions.findIndex((q) => q.id === lastSolvedQuestion.question.id)
+          : 0,
       };
     } else {
       const question = await this.questionRepository
@@ -288,7 +289,7 @@ export class RoundsService {
 
       return {
         questions,
-        lastSolvedQId: questions[0].id,
+        index: 0,
       };
     }
   }

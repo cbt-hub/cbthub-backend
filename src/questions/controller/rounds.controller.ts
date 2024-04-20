@@ -23,7 +23,7 @@ import { UpdateRoundDto } from '../dto/round/updateRound.dto';
 import { RoundsService } from '../service/rounds.service';
 import {
   GetQuestionRoundClickDto,
-  GetQuestionRoundClickDtos,
+  GetQuestionsRoundClickDto,
 } from '../dto/round/getQuestionRoundClick.dto';
 
 @ApiTags('rounds')
@@ -88,7 +88,7 @@ export class RoundsController {
   async getQuestions(
     @Param('roundId') roundId: string,
     @Req() req: any,
-  ): Promise<GetQuestionRoundClickDtos> {
+  ): Promise<GetQuestionsRoundClickDto> {
     this.logger.debug('Getting questions');
     const token = req.headers.authorization
       ? req.headers.authorization.split(' ')[1]

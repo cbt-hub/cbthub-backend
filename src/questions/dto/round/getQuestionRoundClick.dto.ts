@@ -143,7 +143,7 @@ export interface GetQuestionRoundClickDtoV2 {
   questionStatus?: QuestionStatusDto;
 }
 
-export interface GetQuestionRoundClickDtos {
+export interface GetQuestionsRoundClickDto {
   questions: GetQuestionRoundClickDtoV2[];
-  lastSolvedQId: number;
+  index: number;
 }
